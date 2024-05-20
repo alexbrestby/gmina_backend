@@ -1,0 +1,36 @@
+{
+  "name": "gmina_backend",
+  "version": "1.0.0",
+  "description": "A simple backend using Koa, TypeScript, and nodemon",
+  "main": "server.ts",
+  "scripts": {
+    "start": "ts-node server.ts",
+    "dev": "nodemon",
+    "lint": "eslint 'src/**/*.ts' 'server.ts'"
+  },
+  "dependencies": {
+    "koa": "^2.15.3",
+    "koa-bodyparser": "^4.4.1",
+    "koa-router": "^12.0.1"
+  },
+  "devDependencies": {
+    "@types/koa": "^2.15.0",
+    "@types/koa-bodyparser": "^4.3.12",
+    "@types/koa-router": "^7.4.8",
+    "@types/node": "^20.12.12",
+    "@typescript-eslint/eslint-plugin": "^7.9.0",
+    "@typescript-eslint/parser": "^7.9.0",
+    "eslint": "^8.57.0",
+    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "src",
+      "server.ts"
+    ],
+    "ext": "ts",
+    "exec": "ts-node server.ts"
+  }
+}
