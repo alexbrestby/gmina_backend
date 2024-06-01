@@ -1,12 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Token } from './Token';
 
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ type: 'varchar', length: 50, unique: true })
-
+  @Column({ type: 'varchar', length: 50, unique: false })
   username!: string;
 
   @Column({ type: 'varchar', length: 255 })
@@ -39,9 +39,15 @@ export class User {
   @Column({ type: 'varchar', length: 255, nullable: true })
   profile_picture_url?: string;
 
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  activation_link?: string;
+
   @CreateDateColumn({ type: 'timestamp' })
   created_at!: Date;
 
   @UpdateDateColumn({ type: 'timestamp' })
   updated_at!: Date;
+
+  @OneToMany(() => Token, token => token.user)
+  tokens!: Token[];
 }

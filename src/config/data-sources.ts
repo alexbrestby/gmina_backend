@@ -1,16 +1,17 @@
 import { DataSource } from 'typeorm';
-import { User } from '../models/User';
+import { User } from '../entity/User';
+import { Token } from '../entity/Token';
 
 export const AppDataSource = new DataSource({
-  type: 'postgres', // или ваш тип базы данных
+  type: 'postgres',
   host: 'localhost',
   port: 5432,
   username: 'ibm',
   password: '453644',
   database: 'infamily',
-  entities: [User],
+  entities: [User, Token],
   synchronize: true,// установите false в продакшене
-  logging: true,
+  // logging: true,
 });
 
 AppDataSource.initialize()
