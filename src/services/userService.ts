@@ -18,7 +18,13 @@ export class UserService {
     const hashedPassword = await bcrypt.hash(password, 3);
     const activation_link = uuidv4();
 
-    const user = userRepository.create({ username, email, password: hashedPassword, activation_link });
+    const user = userRepository.create(
+      {
+        username,
+        email,
+        password: hashedPassword,
+        activation_link
+      });
     await userRepository.save(user);
     await MailService.sendActivationMail(email, activation_link);
 
@@ -26,5 +32,11 @@ export class UserService {
     const tokens = TokenService.createTokens({ ...userDto } as User);
     await TokenService.saveToken(userDto.id, tokens.refreshToken);
     return tokens;
+  }
+
+  public static async getAllUsers() {
+    const userRepository = AppDataSource.getRepository(User);
+    const users = await userRepository.find({ relations: ['tokens'] });
+    return users;
   }
 }
