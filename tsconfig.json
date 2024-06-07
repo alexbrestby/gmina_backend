@@ -6,14 +6,15 @@
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    // "strictPropertyInitialization": false,
+    "strictPropertyInitialization": false,
     "skipLibCheck": true,
+    "noImplicitAny": true,
     "outDir": "./dist",
     "rootDir": "./src"
   },
   "include": [
     "src/**/*.ts",
-    "/server.ts"
+    "./server.ts"
   ],
   "exclude": [
     "node_modules"

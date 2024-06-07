@@ -9,15 +9,38 @@ export class AuthController {
   }
 
   public static async register(ctx: Context) {
+    const body = ctx.request.body as UserBody;
     try {
-      const body = ctx.request.body as UserBody;
       const userData = await UserService.register({ ...body });
-      ctx.cookies.set('refresh-token', userData.refreshToken, {
-        httpOnly: true, // false для тестирования, true для продакшена
-        maxAge: 30 * 24 * 60 * 60 * 1000 // 10 дней в миллисекундах
-      });
+      if (userData) {
+        ctx.cookies.set('refresh-token', userData.tokens.refreshToken, {
+          httpOnly: true,
+          maxAge: 30 * 24 * 60 * 60 * 1000, 
+        });
+        ctx.body = {
+          message: `Пользователь успешно создан`,
+          refreshToken: userData.tokens.refreshToken
+        }
+      }
     } catch (error) {
-
+      if (error instanceof Error) {
+        if (error.message.includes(body.email)) {
+          ctx.status = 409; // Conflict
+          ctx.body = {
+            message: error.message
+          };
+        } else {
+          ctx.status = 500; // Internal Server Error
+          ctx.body = {
+            message: 'Internal server error'
+          };
+        }
+      } else {
+        ctx.status = 500; // Internal Server Error for unknown error type
+        ctx.body = {
+          message: 'An unknown error occurred'
+        };
+      }
     }
   }
 

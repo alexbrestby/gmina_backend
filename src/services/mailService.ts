@@ -4,7 +4,7 @@ import type SMTPTransport from 'nodemailer/lib/smtp-transport';
 
 export class MailService {
 
-  public static async sendActivationMail(to = '01.80@mail.ru', link = 'world') {
+  public static async sendActivationMail(to: string, link: string) {
     const transporter = nodemailer.createTransport({
       host: process.env.MAIL_HOST,
       port: process.env.MAIL_PORT,
@@ -16,15 +16,15 @@ export class MailService {
       connectionTimeout: 20000,
       greetingTimeout: 20000,
       socketTimeout: 20000,
-      debug: true, // Включить отладку
+      // debug: true, 
     } as SMTPTransport.Options);
 
     async function main() {
       const info = await transporter.sendMail({
-        from: '"gmina.by" <support@gmina.by>', // sender address
-        to: to, // list of receivers
-        subject: "✔ Активация учетной записи на gmina.by", // Subject line
-        text: '', // plain text body
+        from: '"gmina.by" <support@gmina.by>', 
+        to: to, 
+        subject: "✔ Активация учетной записи на gmina.by", 
+        text: '', 
         html: `
           <div>
             <h1>Активируйте учетную запись</h1>
@@ -34,8 +34,6 @@ export class MailService {
       });
       console.log("Message sent: %s", info.messageId);
     }
-
-    // Вызов функции main
     await main().catch(console.error);
   }
 }

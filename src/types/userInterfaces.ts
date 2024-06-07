@@ -5,5 +5,5 @@ export interface UserBody {
   password: string;
   first_name: string;
   role: string;
-  is_active: Boolean;
+  is_active: boolean;
 }

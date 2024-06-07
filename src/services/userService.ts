@@ -11,11 +11,11 @@ export class UserService {
   public static async register({ email, password, username }: UserBody) {
 
     const userRepository = AppDataSource.getRepository(User);
-    const candidate = await userRepository.findOne({ where: { email } });
-    if (candidate) {
+    const existingUser = await userRepository.findOne({ where: { email } });
+    if (existingUser) {
       throw new Error(`Пользователь с адресом почты ${email} уже существует`);
     }
-    const hashedPassword = await bcrypt.hash(password, 3);
+    const hashedPassword = await bcrypt.hash(password, Number(process.env.SALT_ROUNDS));
     const activation_link = uuidv4();
 
     const user = userRepository.create(
@@ -31,7 +31,7 @@ export class UserService {
     const userDto = new UserDto(user);
     const tokens = TokenService.createTokens({ ...userDto } as User);
     await TokenService.saveToken(userDto.id, tokens.refreshToken);
-    return tokens;
+    return { tokens, email };
   }
 
   public static async getAllUsers() {
