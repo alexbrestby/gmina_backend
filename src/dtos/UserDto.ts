@@ -1,16 +1,34 @@
 import { User } from "../entity/User";
 
 export class UserDto {
-  id;
-  email;
-  username;
-  is_active;
+  id: number;
+  email: string;
+  username: string;
+  is_active: boolean;
 
+  /**
+   * Create a User Data Transfer Object (DTO)
+   * @param {User} model - The user model
+   */
   constructor(model: User) {
+    /**
+     * @type {number}
+     */
     this.id = model.id;
+
+    /**
+     * @type {string}
+     */
     this.email = model.email;
+
+    /**
+     * @type {string}
+     */
     this.username = model.username;
+
+    /**
+     * @type {boolean}
+     */
     this.is_active = model.is_active;
   }
 }
-

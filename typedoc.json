@@ -1,0 +1,14 @@
+{
+  "entryPoints": [
+    "src"
+  ],
+  "entryPointStrategy": "expand",
+  "out": "docs",
+  "exclude": [
+    "**/node_modules/**"
+  ],
+  "includeVersion": true,
+  "excludeExternals": true,
+  "excludePrivate": true,
+  "excludeProtected": true
+}
