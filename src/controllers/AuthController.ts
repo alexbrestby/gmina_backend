@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { Context } from 'koa';
 import { UserBody } from '../types/userInterfaces';
 import { UserService } from '../services/userService';
@@ -15,7 +16,7 @@ export class AuthController {
       if (userData) {
         ctx.cookies.set('refresh-token', userData.tokens.refreshToken, {
           httpOnly: true,
-          maxAge: 30 * 24 * 60 * 60 * 1000, 
+          maxAge: 30 * 24 * 60 * 60 * 1000,
         });
         ctx.body = {
           message: `Пользователь успешно создан`,
@@ -54,9 +55,13 @@ export class AuthController {
 
   public static async activate(ctx: Context) {
     try {
-
+      const activationLink = ctx.params.link;
+      const user = await UserService.activate(activationLink);
+      ctx.body = { message: `Пользователь c email: ${user.email} успешно активирован` };
     } catch (error) {
-
+      if (error instanceof Error) {
+        ctx.body = { message: error.message }
+      }
     }
   }
 

@@ -6,4 +6,5 @@ export interface UserBody {
   first_name: string;
   role: string;
   is_active: boolean;
+  activation_link: string;
 }

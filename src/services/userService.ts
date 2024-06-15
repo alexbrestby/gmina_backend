@@ -34,6 +34,23 @@ export class UserService {
     return { tokens, email };
   }
 
+  public static async activate(activationLink: string) {
+    const userRepository = AppDataSource.getRepository(User);
+    const isActivatedUser = await userRepository.findOne({ where: { is_active: true, activation_link: activationLink } });
+
+    if (isActivatedUser) {
+      throw new Error(`Пользователь c email: ${isActivatedUser.email} уже активирован`);
+    } else {
+      const user = await userRepository.findOne({ where: { activation_link: activationLink } });
+      if (!user) {
+        throw new Error('Некорректная ссылка активации ');
+      }
+      user.is_active = true;
+      await userRepository.save(user);
+      return user;
+    }
+  }
+
   public static async getAllUsers() {
     const userRepository = AppDataSource.getRepository(User);
     const users = await userRepository.find({ relations: ['tokens'] });

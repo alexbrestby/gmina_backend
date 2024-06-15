@@ -28,7 +28,7 @@ export class MailService {
         html: `
           <div>
             <h1>Активируйте учетную запись</h1>
-            <a href="https://${process.env.API_URL}/user/activate/${link}">ссылка для активации</a>
+            <a href="http://${process.env.API_URL}/user/activate/${link}">ссылка для активации</a>
           </div>
               `
       });

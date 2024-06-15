@@ -27,7 +27,7 @@ export class User {
   @Column({ type: 'varchar', length: 15, nullable: true })
   phone_number?: string;
 
-  @Column({ type: 'boolean', default: true })
+  @Column({ type: 'boolean', default: false })
   is_active!: boolean;
 
   @Column({ type: 'timestamp', nullable: true })
