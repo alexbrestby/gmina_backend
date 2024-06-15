@@ -1,11 +1,12 @@
 import Router from 'koa-router';
-// import { UserController } from '../controllers/userController';
 import { AuthController } from '../controllers/AuthController';
+import { validateRequestBody } from '../middlewares/validateRequestBody';
+import { userRegisterSchema, userLoginSchema } from '../services/validationService';
 
 const router = new Router({ prefix: '/user' });
 
-router.post('/login', AuthController.login);
-router.post('/register', AuthController.register);
+router.post('/login', validateRequestBody(userLoginSchema), AuthController.login);
+router.post('/register', validateRequestBody(userRegisterSchema), AuthController.register);
 router.post('/logout', AuthController.logout);
 router.post('/refresh', AuthController.refresh);
 router.get('/activate/:link', AuthController.activate);

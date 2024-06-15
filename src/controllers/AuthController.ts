@@ -6,7 +6,6 @@ import { UserService } from '../services/userService';
 export class AuthController {
 
   public static async login(ctx: Context) {
-
   }
 
   public static async register(ctx: Context) {
