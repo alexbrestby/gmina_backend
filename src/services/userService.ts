@@ -7,6 +7,7 @@ import { MailService } from '../services/mailService';
 import { TokenService } from '../services/tokenService';
 import { UserDto } from '../dtos/UserDto';
 import { JwtPayload } from 'jsonwebtoken';
+import { Context } from 'koa';
 
 export class UserService {
   /**
@@ -45,16 +46,16 @@ export class UserService {
    * @returns {Promise<User>} The activated user
    * @throws {Error} If the user is already activated or the activation link is invalid
    */
-  public static async activate(activationLink: string): Promise<User> {
+  public static async activate(ctx: Context, activationLink: string): Promise<User> {
     const userRepository = AppDataSource.getRepository(User);
     const isActivatedUser = await userRepository.findOne({ where: { is_active: true, activation_link: activationLink } });
 
     if (isActivatedUser) {
-      throw new Error(`Пользователь c email: ${isActivatedUser.email} уже активирован`);
+      ctx.throw(409, `User with email: ${isActivatedUser.email} is alredy activated`);
     } else {
       const user = await userRepository.findOne({ where: { activation_link: activationLink } });
       if (!user) {
-        throw new Error('Некорректная ссылка активации');
+        ctx.throw(400, 'Incorrect activaiton link');
       }
       user.is_active = true;
       await userRepository.save(user);

@@ -27,7 +27,7 @@ export class AuthController {
           maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
         });
         ctx.body = {
-          message: 'Пользователь успешно создан',
+          message: 'User registration success',
           refreshToken: userData.tokens.refreshToken
         };
       }
@@ -39,15 +39,7 @@ export class AuthController {
             message: error.message
           };
         } else {
-          ctx.status = 500; // Internal Server Error
-          ctx.body = {
-            message: 'Internal server error'
-          };
-        }
-      } else {
-        ctx.status = 500; // Internal Server Error for unknown error type
-        ctx.body = {
-          message: 'An unknown error occurred'
+          ctx.throw(500, 'User registration failed');
         };
       }
     }
@@ -72,17 +64,12 @@ export class AuthController {
    * @returns {Promise<void>}
    */
   public static async activate(ctx: Context): Promise<void> {
-    try {
+    {
       const activationLink = ctx.params.link;
-      const user = await UserService.activate(activationLink);
+      const user = await UserService.activate(ctx, activationLink);
       ctx.body = { message: `Пользователь c email: ${user.email} успешно активирован` };
-    } catch (error) {
-      if (error instanceof Error) {
-        ctx.body = { message: error.message };
-      }
     }
   }
-
   /**
    * Handle refresh token
    * @param {Context} ctx - The Koa request/response context object

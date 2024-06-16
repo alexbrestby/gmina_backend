@@ -6,6 +6,7 @@ import bodyParser from 'koa-bodyparser';
 import authRoutes from './routes/authRoutes';
 import indexRoutes from './routes/indexRoutes';
 import { AppDataSource } from './config/data-sources';
+import errorHandler from './middlewares/errorHandler';
 
 const app = new Koa();
 
@@ -21,6 +22,9 @@ const initializeServer = async () => {
     await AppDataSource.initialize();
     console.log('Database connected');
 
+
+    // Set up custom error handler
+    app.use(errorHandler)
     // Set up CORS middleware
     app.use(cors({
       allowMethods: 'GET',
