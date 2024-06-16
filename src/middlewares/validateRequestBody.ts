@@ -3,8 +3,6 @@ import { Schema } from 'joi';
 
 /**
  * Middleware to validate the request body against a Joi schema.
- * @param {Schema} schema - The Joi schema to validate against
- * @returns {Function} Koa middleware function
  */
 export const validateRequestBody = (schema: Schema) => async (ctx: Context, next: Next) => {
   const { error } = schema.validate(ctx.request.body);
@@ -17,3 +15,4 @@ export const validateRequestBody = (schema: Schema) => async (ctx: Context, next
   }
   await next();
 };
+

@@ -9,7 +9,19 @@ export class AuthController {
    * @returns {Promise<void>}
    */
   public static async login(ctx: Context): Promise<void> {
-    // Implementation here
+    const body = ctx.request.body as UserBody;
+    const userData = await UserService.login(ctx, { ...body });
+    if (userData) {
+      ctx.cookies.set('refresh-token', userData.tokens.refreshToken, {
+        httpOnly: true,
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      });
+      ctx.body = {
+        message: 'Login successful',
+        accessToken: userData.tokens.accessToken,
+        refreshToken: userData.tokens.refreshToken,
+      };
+    }
   }
 
   /**
@@ -19,29 +31,16 @@ export class AuthController {
    */
   public static async register(ctx: Context): Promise<void> {
     const body = ctx.request.body as UserBody;
-    try {
-      const userData = await UserService.register({ ...body });
-      if (userData) {
-        ctx.cookies.set('refresh-token', userData.tokens.refreshToken, {
-          httpOnly: true,
-          maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-        });
-        ctx.body = {
-          message: 'User registration success',
-          refreshToken: userData.tokens.refreshToken
-        };
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        if (error.message.includes(body.email)) {
-          ctx.status = 409; // Conflict
-          ctx.body = {
-            message: error.message
-          };
-        } else {
-          ctx.throw(500, 'User registration failed');
-        };
-      }
+    const userData = await UserService.register(ctx, { ...body });
+    if (userData) {
+      ctx.cookies.set('refresh-token', userData.tokens.refreshToken, {
+        httpOnly: true,
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      });
+      ctx.body = {
+        message: 'User registration success',
+        refreshToken: userData.tokens.refreshToken
+      };
     }
   }
 
@@ -67,7 +66,7 @@ export class AuthController {
     {
       const activationLink = ctx.params.link;
       const user = await UserService.activate(ctx, activationLink);
-      ctx.body = { message: `Пользователь c email: ${user.email} успешно активирован` };
+      ctx.body = { message: `User with email: ${user.email} activation success` };
     }
   }
   /**
@@ -102,5 +101,4 @@ export class AuthController {
   }
 }
 
-// Экспортируем AuthController
 export default AuthController;

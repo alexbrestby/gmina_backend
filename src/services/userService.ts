@@ -11,16 +11,42 @@ import { Context } from 'koa';
 
 export class UserService {
   /**
+  * Login a user
+  * @param {Context} ctx - The Koa request/response context object
+  * @param {UserBody} UserBody - The user data to login
+  * @returns {Promise<{ tokens: JwtPayload, email: string }> The tokens and email of the logged-in user
+  * @throws {Error} If the email or password is incorrect or user not found
+  */
+  public static async login(ctx: Context, { email, password }: UserBody): Promise<{ tokens: JwtPayload, email: string }> {
+    const userRepository = AppDataSource.getRepository(User);
+    const user = await userRepository.findOne({ where: { email } });
+    if (!user) {
+      ctx.throw(404, 'User not found');
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      ctx.throw(401, 'Invalid email or password');
+    }
+
+    const userDto = new UserDto(user);
+    const tokens = TokenService.createTokens({ ...userDto } as User);
+    await TokenService.saveToken(userDto.id, tokens.refreshToken);
+    return { tokens, email };
+  }
+
+  /**
    * Register a new user
+   * @param {Context} ctx - The Koa request/response context object
    * @param {UserBody} userBody - The user data to register
    * @returns {Promise<{ tokens: JwtPayload, email: string }>The tokens and email of the registered user
    * @throws {Error} If a user with the provided email already exists
    */
-  public static async register({ email, password, username }: UserBody): Promise<{ tokens: JwtPayload, email: string }> {
+  public static async register(ctx: Context, { email, password, username }: UserBody): Promise<{ tokens: JwtPayload, email: string }> {
     const userRepository = AppDataSource.getRepository(User);
     const existingUser = await userRepository.findOne({ where: { email } });
     if (existingUser) {
-      throw new Error(`Пользователь с адресом почты ${email} уже существует`);
+      ctx.throw(409, `User with email: ${email} already exists`);
     }
     const hashedPassword = await bcrypt.hash(password, Number(process.env.SALT_ROUNDS));
     const activation_link = uuidv4();
