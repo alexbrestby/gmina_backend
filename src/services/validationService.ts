@@ -3,7 +3,6 @@ import Joi from 'joi';
 
 /**
  * Joi schema for user registration validation.
- * @type {Object}
  * @property {string} username - The username, must be between 3 and 30 characters
  * @property {string} email - The email address, must be a valid email
  * @property {string} password - The password, must be at least 6 characters
@@ -16,7 +15,6 @@ export const userRegisterSchema = Joi.object({
 
 /**
  * Joi schema for user login validation.
- * @type {Object}
  * @property {string} email - The email address, must be a valid email
  * @property {string} password - The password, must be at least 6 characters
  */

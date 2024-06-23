@@ -23,8 +23,6 @@ const initializeServer = async () => {
     console.log('Database connected');
 
 
-    // Set up custom error handler
-    app.use(errorHandler)
     // Set up CORS middleware
     app.use(cors({
       allowMethods: 'GET',
@@ -36,6 +34,9 @@ const initializeServer = async () => {
 
     // Set up cookie middleware
     app.use(cookie());
+
+    // Set up custom error handler
+    app.use(errorHandler)
 
     // Set up routes
     app.use(indexRoutes.routes()).use(indexRoutes.allowedMethods());

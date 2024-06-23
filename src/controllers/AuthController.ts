@@ -1,6 +1,7 @@
 import { Context } from 'koa';
 import { UserBody } from '../types/userInterfaces';
 import { UserService } from '../services/userService';
+import { TokenService } from '../services/tokenService';
 
 export class AuthController {
   /**
@@ -19,7 +20,6 @@ export class AuthController {
       ctx.body = {
         message: 'Login successful',
         accessToken: userData.tokens.accessToken,
-        refreshToken: userData.tokens.refreshToken,
       };
     }
   }
@@ -39,7 +39,7 @@ export class AuthController {
       });
       ctx.body = {
         message: 'User registration success',
-        refreshToken: userData.tokens.refreshToken
+        accessToken: userData.tokens.accessToken
       };
     }
   }
@@ -50,11 +50,10 @@ export class AuthController {
    * @returns {Promise<void>}
    */
   public static async logout(ctx: Context): Promise<void> {
-    try {
-      // Implementation here
-    } catch (error) {
-      // Handle error
-    }
+    const refreshToken = ctx.cookies.get('refresh-token');
+    const token = await UserService.logout(refreshToken as string);
+    ctx.cookies.set('refresh-token', null, { expires: new Date(0) });
+    ctx.body = { token }
   }
 
   /**
@@ -69,16 +68,22 @@ export class AuthController {
       ctx.body = { message: `User with email: ${user.email} activation success` };
     }
   }
+
   /**
    * Handle refresh token
    * @param {Context} ctx - The Koa request/response context object
    * @returns {Promise<void>}
    */
   public static async refresh(ctx: Context): Promise<void> {
-    try {
-      // Implementation here
-    } catch (error) {
-      // Handle error
+    const refreshToken = ctx.cookies.get('refresh-token');
+    const tokens = await UserService.refresh(ctx, refreshToken as string);
+    ctx.cookies.set('refresh-token', tokens.refreshToken, {
+      httpOnly: true,
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+    ctx.body = {
+      message: 'tokens refresh success',
+      tokens,
     }
   }
 

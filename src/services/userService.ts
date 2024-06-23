@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import { AppDataSource } from '../config/data-sources';
 import { User } from '../entity/User';
+import { Token } from '../entity/Token';
 import { UserBody } from '../types/userInterfaces';
 import { v4 as uuidv4 } from 'uuid';
 import { MailService } from '../services/mailService';
@@ -65,6 +66,40 @@ export class UserService {
     await TokenService.saveToken(userDto.id, tokens.refreshToken);
     return { tokens, email };
   }
+
+
+  /**
+   * Logout a user
+   * @param {refreshToken} refreshToken - The last refreshToken stored 
+   * @returns {Promise<Token>}>The tokens and email of the registered user
+   */
+  public static async logout(refreshToken: string): Promise<Token> {
+    const existingUser = await TokenService.deleteToken(refreshToken);
+    return existingUser;
+  }
+
+
+  /**
+   * Refresh a token
+   *
+   */
+  public static async refresh(ctx: Context, refreshToken: string): Promise<JwtPayload> {
+    if (!refreshToken) {
+      ctx.throw(401, 'Invalid token')
+    }
+    const userData = TokenService.validateToken(refreshToken, process.env.JWT_REFRESH_KEY as string) as User;
+    const checkTokenInDB = await TokenService.findTokenInDB(refreshToken);
+    if (!userData || !checkTokenInDB) {
+      ctx.throw(401, 'Unauthorized access');
+    }
+    const userRepository = AppDataSource.getRepository(User);
+    const user = await userRepository.findOne({ where: { id: userData.id } });
+    const userDto = new UserDto(user as User);
+    const tokens = TokenService.createTokens({ ...userDto } as User);
+    await TokenService.saveToken(userDto.id, tokens.refreshToken);
+    return tokens;
+  }
+
 
   /**
    * Activate a user account
