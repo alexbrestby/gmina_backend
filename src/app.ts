@@ -26,7 +26,8 @@ const initializeServer = async () => {
     // Set up CORS middleware
     app.use(cors({
       allowMethods: 'GET',
-      // origin: 'https://leoniuk.org'
+      origin: 'http://localhost:5173',
+      credentials: true,
     }));
 
     // Set up body parser middleware

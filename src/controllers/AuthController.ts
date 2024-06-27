@@ -19,6 +19,7 @@ export class AuthController {
       });
       ctx.body = {
         message: 'Login successful',
+        username: userData.username,
         accessToken: userData.tokens.accessToken,
       };
     }

@@ -5,6 +5,7 @@ export class UserDto {
   email: string;
   username: string;
   is_active: boolean;
+  role: string;
 
   /**
    * Create a User Data Transfer Object (DTO)
@@ -30,5 +31,10 @@ export class UserDto {
      * @type {boolean}
      */
     this.is_active = model.is_active;
+
+    /**
+     * @type {string}
+     */
+    this.role = model.role;
   }
 }

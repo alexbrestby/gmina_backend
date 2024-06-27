@@ -15,10 +15,10 @@ export class UserService {
   * Login a user
   * @param {Context} ctx - The Koa request/response context object
   * @param {UserBody} UserBody - The user data to login
-  * @returns {Promise<{ tokens: JwtPayload, email: string }> The tokens and email of the logged-in user
+  * @returns {Promise<{ tokens: JwtPayload, username: string }> The tokens and username of the logged-in user
   * @throws {Error} If the email or password is incorrect or user not found
   */
-  public static async login(ctx: Context, { email, password }: UserBody): Promise<{ tokens: JwtPayload, email: string }> {
+  public static async login(ctx: Context, { email, password }: UserBody): Promise<{ tokens: JwtPayload, username: string }> {
     const userRepository = AppDataSource.getRepository(User);
     const user = await userRepository.findOne({ where: { email } });
     if (!user) {
@@ -33,7 +33,7 @@ export class UserService {
     const userDto = new UserDto(user);
     const tokens = TokenService.createTokens({ ...userDto } as User);
     await TokenService.saveToken(userDto.id, tokens.refreshToken);
-    return { tokens, email };
+    return { tokens, username: user.username };
   }
 
   /**
